@@ -1,5 +1,5 @@
 # Inventory Mate
-## A little helper for the household
+## The little helper in the housekeeping
 
 ### Description
 - Coming soon
