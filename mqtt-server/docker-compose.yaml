@@ -9,5 +9,5 @@ services:
       - ./passwd:/mosquitto/config/passwd
       - ./user.acl:/mosquitto/config/user.acl
     ports:
-      - 1883:1883
-      - 9001:9001
+      - 23218:1883
+      - 35321:9001
