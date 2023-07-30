@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0.15-openssl
+    container_name: mqtt-broker
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./passwd:/mosquitto/config/passwd
+      - ./user.acl:/mosquitto/config/user.acl
+    ports:
+      - 1883:1883
+      - 9001:9001
