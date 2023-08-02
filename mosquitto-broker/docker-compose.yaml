@@ -1,9 +1,9 @@
 version: "3.9"
 
 services:
-  mqtt-broker:
+  mosquitto-broker:
     image: eclipse-mosquitto:2.0.15-openssl
-    container_name: mqtt-broker
+    container_name: mosquitto-broker
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./passwd:/mosquitto/config/passwd
