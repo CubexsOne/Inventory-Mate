@@ -56,6 +56,8 @@ export class MQTTClient {
 
     this.client?.on('message', async (topic, message) => {
       if (topic.toLowerCase() !== this.readTopic.toLowerCase()) return
+      const stringifiedMessage = message.toString().trim()
+      if (stringifiedMessage.length === 0) return
 
       const response = await this.callback(message.toString().toLowerCase())
       this.sendMessage(response)
