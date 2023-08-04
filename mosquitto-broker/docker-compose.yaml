@@ -10,4 +10,3 @@ services:
       - ./user.acl:/mosquitto/config/user.acl
     ports:
       - 23218:1883
-      - 35321:9001
