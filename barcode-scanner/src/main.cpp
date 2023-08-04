@@ -16,16 +16,16 @@ void sendMQTTMessage(const char*);
 // Declare Wifi
 const char* wifi_ssid = WIFI_SSID;
 const char* wifi_password = WIFI_PASSWORD;
-WiFiClient espClient;
+WiFiClient wifiClient;
 
 // Declare MQTT
 const char* mqtt_server = MQTT_HOST;
-const int mqtt_port = 1883;
+const int mqtt_port = 23218;
 const char* mqtt_user = MQTT_USER;
 const char* mqtt_password = MQTT_PASSWORD;
 const char* mqtt_read_topic = MQTT_READ_TOPIC;
 const char* mqtt_write_topic = MQTT_WRITE_TOPIC;
-PubSubClient client(espClient);
+PubSubClient mqttClient(wifiClient);
 
 // Declare Pins
 const int BUTTON_PIN = 25;
@@ -47,6 +47,9 @@ void setup() {
   // SETUP Wifi
   setup_wifi();
 
+  // SETUP MQTT
+  setup_mqtt();
+
   // SETUP Pins
   pinMode(BUTTON_PIN, INPUT);
   pinMode(RED_LED_PIN, OUTPUT);
@@ -59,10 +62,10 @@ void setup() {
 
 void loop() {
   // Etablish MQTT Connection
-  if (!client.connected()) {
+  if (!mqttClient.connected()) {
     reconnect();
   }
-  client.loop();
+  mqttClient.loop();
 
   // Read Button
   // int buttonState = digitalRead(BUTTON_PIN);
@@ -104,8 +107,8 @@ void setup_wifi() {
 
 // MQTT
 void setup_mqtt() {
-  client.setServer(mqtt_server, mqtt_port);
-  client.setCallback(callback);
+  mqttClient.setServer(mqtt_server, mqtt_port);
+  mqttClient.setCallback(callback);
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -120,20 +123,20 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 void reconnect() {
   Serial.println("Connecting to MQTT-Broker...");
-  while (!client.connected()) {
-    if (client.connect("Scanner_001_ClientID", mqtt_user, mqtt_password)) {
+  while (!mqttClient.connected()) {
+    if (mqttClient.connect("Scanner_001_ClientID", mqtt_user, mqtt_password)) {
       Serial.println("Connected!");
-      client.subscribe(mqtt_read_topic);
+      mqttClient.subscribe(mqtt_read_topic);
     } else {
-      Serial.println("Retrying in 5 seconds...");
+      Serial.println("Retrying in 5 seconds... rc: " + mqttClient.state());
       delay(5000);
     }
   }
 }
 
 void sendMQTTMessage(const char* message) {
-  if (!client.connected()) {
+  if (!mqttClient.connected()) {
     reconnect();
   }
-  client.publish(mqtt_write_topic, message);
+  mqttClient.publish(mqtt_write_topic, message);
 }
