@@ -1,34 +1,22 @@
 #include <Adafruit_SSD1306.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <PubSubClient.h>
 #include "secrets.h"
 #include <SoftwareSerial.h>
-#include <WiFi.h>
 #include <Wire.h>
 
-// Declare Wifi
-const char* wifi_ssid = WIFI_SSID;
-const char* wifi_password = WIFI_PASSWORD;
-WiFiClient wifiClient;
-void setup_wifi();
+#include "wifi_manager.h"
+#include "mqtt_client.h"
 
-// Declare MQTT
-const char* mqtt_server = MQTT_HOST;
-const int mqtt_port = 23218;
-const char* mqtt_user = MQTT_USER;
-const char* mqtt_password = MQTT_PASSWORD;
-const char* mqtt_read_topic = MQTT_READ_TOPIC;
-const char* mqtt_write_topic = MQTT_WRITE_TOPIC;
-PubSubClient mqttClient(wifiClient);
-void setup_mqtt();
-void reconnect();
-void callback(char*, byte*, unsigned int);
-void sendMQTTMessage(String);
+
+// Wifi
+WifiManager wifiManager;
+
+// MQTT
+MQTTClient mqttClient;
 
 // Declare Pins
-const int BUTTON_PIN = 25;
-const int RED_LED_PIN = 26;
+const int BUTTON_PIN = 15;
 
 // Declare Barcode Scanner
 SoftwareSerial barcodScanner(16, 17);
@@ -62,15 +50,13 @@ void setup() {
   barcodScanner.begin(9600);
 
   // SETUP Wifi
-  setup_wifi();
+  wifiManager.connect();
 
   // SETUP MQTT
-  setup_mqtt();
+  mqttClient.begin();
 
   // SETUP Pins
   pinMode(BUTTON_PIN, INPUT);
-  pinMode(RED_LED_PIN, OUTPUT);
-  digitalWrite(RED_LED_PIN, HIGH);
 
   // SETUP Display
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
@@ -84,9 +70,6 @@ void setup() {
 
 void loop() {
   // Etablish MQTT Connection
-  if (!mqttClient.connected()) {
-    reconnect();
-  }
   mqttClient.loop();
 
   // Read Button
@@ -99,7 +82,7 @@ void loop() {
       char input = barcodScanner.read();
       if (input == '\n') {
         String message = createMessage(barcode);
-        sendMQTTMessage(message);
+        mqttClient.sendMQTTMessage(message);
         barcode = "";
         return;
       }
@@ -108,56 +91,6 @@ void loop() {
       }
     }
   }
-}
-
-// WIFI
-void setup_wifi() {
-  delay(10);
-  WiFi.begin(wifi_ssid, wifi_password);
-
-  Serial.print("Connecting to Wifi...");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("WiFi connected!");
-}
-
-// MQTT
-void setup_mqtt() {
-  mqttClient.setServer(mqtt_server, mqtt_port);
-  mqttClient.setCallback(callback);
-}
-
-void callback(char* topic, byte* payload, unsigned int length) {
-    String product = "";
-    for (int i = 0; i < length; i++) {
-      product += (char)payload[i];
-    }
-    drawInterface();
-    drawProductName(product);
-}
-
-void reconnect() {
-  Serial.println("Connecting to MQTT-Broker...");
-  while (!mqttClient.connected()) {
-    if (mqttClient.connect("Scanner_001_ClientID", mqtt_user, mqtt_password)) {
-      Serial.println("Connected!");
-      mqttClient.subscribe(mqtt_read_topic);
-      digitalWrite(RED_LED_PIN, LOW);
-    } else {
-      Serial.println("Retrying in 5 seconds... rc: " + mqttClient.state());
-      digitalWrite(RED_LED_PIN, HIGH);
-      delay(5000);
-    }
-  }
-}
-
-void sendMQTTMessage(String message) {
-  if (!mqttClient.connected()) {
-    reconnect();
-  }
-  mqttClient.publish(mqtt_write_topic, message.c_str());
 }
 
 // Message
