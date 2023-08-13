@@ -1,5 +1,13 @@
 #include <Arduino.h>
 
-void setup() {}
+#include "WifiManager.h"
 
-void loop() {}
+WifiManager wifiManager;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  wifiManager.loop();
+}
