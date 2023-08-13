@@ -24,6 +24,7 @@ void MqttClient::loop() {
   if (!initialized) {
     pubSubClient.setServer(mqtt_server, mqtt_port);
     pubSubClient.setCallback(callback);
+    pubSubClient.setKeepAlive(60);
   }
 
   if (!pubSubClient.connected()) {
