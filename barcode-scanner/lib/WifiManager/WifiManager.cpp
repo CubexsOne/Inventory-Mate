@@ -13,9 +13,11 @@ void WifiManager::loop() {
   // TODO: Add display output
   if (WiFi.status() != WL_CONNECTED) {
     isConnected = false;
-    WiFi.begin();
+    WiFi.begin(ssid, password);
     Serial.println("Connecting to Wifi...");
   }
+
+  while(WiFi.status() != WL_CONNECTED);
 
   if (WiFi.status() == WL_CONNECTED && !isConnected) {
     isConnected = true;
