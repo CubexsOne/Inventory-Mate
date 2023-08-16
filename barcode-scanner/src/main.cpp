@@ -16,7 +16,6 @@ void setup() {
   Serial.begin(9600);
   displayManager.begin();
   mqttClient.begin(displayManager);
-  displayManager.welcome();
 }
 
 void loop() {
