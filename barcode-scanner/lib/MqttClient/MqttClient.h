@@ -6,6 +6,7 @@
 class MqttClient {
 public:
     MqttClient();
+    void begin();
     void loop();
     void sendMQTTMessage(String);
 private:
