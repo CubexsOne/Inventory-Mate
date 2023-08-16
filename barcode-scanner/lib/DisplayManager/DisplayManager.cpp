@@ -8,7 +8,7 @@ Adafruit_SSD1306 oled(128, 64, &Wire, -1);
 // auto-disable
 bool isEnabled = true;
 long timeOnEnable = 0;
-int timeToDim = 100 * 1000;
+int timeToDim = 3000;
 
 // Definitions
 void initialize();
@@ -31,22 +31,22 @@ void DisplayManager::loop() {
   }
 }
 
-void DisplayManager::welcome() {
-  isEnabled = true;
-  timeOnEnable = millis();
-  oled.clearDisplay();
-  printText(24, 0, 2, "Welcome");
-  printText(52, 16, 2, "to");
-  printText(12, 32, 2, "Inventory");
-  printText(40, 48, 2, "Mate");
-}
-
-void DisplayManager::printWithInterface(String text) {
+void DisplayManager::printBarcode(String barcode) {
   isEnabled = true;
   timeOnEnable = millis();
   createBorder();
   printTitle();
-  printText(8, 28, 1, text);
+  printText(40, 20, 1, "Barcode:");
+  printText(10, 32, 1, barcode);
+}
+
+void DisplayManager::printItem(String item) {
+  isEnabled = true;
+  timeOnEnable = millis();
+  createBorder();
+  printTitle();
+  printText(40, 20, 1, "Gescannt:");
+  printText(10, 32, 1, item);
 }
 
 void initialize() {
@@ -71,7 +71,7 @@ void disableDisplay() {
 }
 
 void printTitle() {
-  printText(8, 8, 2, "Inventory Mate");
+  printText(24, 8, 1, "Inventory Mate");
 }
 
 void printText(int16_t x, int16_t y, uint8_t textSize, String text) {
