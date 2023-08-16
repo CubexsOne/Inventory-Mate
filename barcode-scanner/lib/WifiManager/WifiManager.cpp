@@ -10,7 +10,6 @@ bool isConnected = false;
 WifiManager::WifiManager() {}
 
 void WifiManager::loop() {
-  // TODO: Add display output
   if (WiFi.status() != WL_CONNECTED) {
     isConnected = false;
     WiFi.begin(ssid, password);
