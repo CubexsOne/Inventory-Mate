@@ -7,9 +7,9 @@ class DisplayManager {
 public:
   DisplayManager();
   void begin();
-  void printWithInterface(String);
   void loop();
-  void welcome();
+  void printBarcode(String);
+  void printItem(String);
 };
 
 #endif
