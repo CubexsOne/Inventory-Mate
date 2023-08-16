@@ -60,5 +60,6 @@ void MqttClient::sendMQTTMessage(String message) {
   if (!pubSubClient.connected()) {
     reconnect();
   }
+  dm.printBarcode(message);
   pubSubClient.publish(mqtt_write_topic, message.c_str());
 }
