@@ -40,11 +40,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
   for (int i = 0; i < length; i++) {
     product += (char)payload[i];
   }
-  dm.printWithInterface(product);
+  dm.printItem(product);
 }
 
 void MqttClient::reconnect() {
-  // TODO: Replace with OLED Output
   Serial.println("Connecting to MQTT-Broker...");
   while (!pubSubClient.connected()) {
     if (pubSubClient.connect("Scanner_001_ClientID", mqtt_user, mqtt_password)) {
