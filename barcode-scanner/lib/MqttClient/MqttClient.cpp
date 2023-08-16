@@ -13,13 +13,16 @@ const char* mqtt_user = MQTT_USER;
 const char* mqtt_password = MQTT_PASSWORD;
 const char* mqtt_read_topic = MQTT_READ_TOPIC;
 const char* mqtt_write_topic = MQTT_WRITE_TOPIC;
+DisplayManager dm;
 
 // Definitions
 void callback(char*, byte*, unsigned int);
 
 MqttClient::MqttClient() {}
 
-void MqttClient::begin() {
+void MqttClient::begin(DisplayManager displayManager) {
+  dm = displayManager;
+
   pubSubClient.setServer(mqtt_server, mqtt_port);
   pubSubClient.setCallback(callback);
   pubSubClient.setKeepAlive(60);
@@ -37,8 +40,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   for (int i = 0; i < length; i++) {
     product += (char)payload[i];
   }
-  Serial.println("Product: " + product);
-  // TODO: Add Display Output
+  dm.printWithInterface(product);
 }
 
 void MqttClient::reconnect() {
