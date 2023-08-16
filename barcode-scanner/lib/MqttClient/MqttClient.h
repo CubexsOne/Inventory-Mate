@@ -6,12 +6,12 @@
 
 class MqttClient {
 public:
-    MqttClient();
-    void begin(DisplayManager);
-    void loop();
-    void sendMQTTMessage(String);
+  MqttClient();
+  void begin(DisplayManager);
+  void loop();
+  void sendMQTTMessage(String);
 private:
-    void reconnect();
+  void reconnect();
 };
 
 #endif
